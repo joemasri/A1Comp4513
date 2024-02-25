@@ -33,7 +33,7 @@ app.get('/api/circuits/:ref', async (req, res) => {
     if (data && data.length > 0) {
         res.send(data);
     } else {
-        res.json({error: `circuit '${req.params.ref}' not found`});
+        res.json({error: `Circuit '${req.params.ref}' not found`});
     }
 })
 
@@ -48,7 +48,7 @@ app.get('/api/circuits/season/:year', async (req, res) => {
     if (data && data.length > 0) {
         res.send(data);
     } else {
-        res.json({error: `year '${req.params.year}' not found`});
+        res.json({error: `Year '${req.params.year}' not found`});
     }
 })
 
@@ -59,6 +59,71 @@ app.get('/api/constructors', async (req, res) => {
     .select(); 
     res.send(data); 
 });
+
+// Return specified constructors ref
+app.get('/api/constructors/:ref', async (req, res) => {
+    const { data, error } = await supabase
+    .from('constructors')
+    .select()
+    .eq('constructorRef', req.params.ref);
+    
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `Constructor ref '${req.params.ref}' not found`});
+    }
+})
+
+// Returns all drivers
+app.get('/api/drivers', async (req, res) => { 
+    const {data, error} = await supabase 
+    .from('drivers') 
+    .select(); 
+    res.send(data); 
+});
+
+// Return specified driverRef field
+app.get('/api/drivers/:ref', async (req, res) => {
+    const { data, error } = await supabase
+    .from('drivers')
+    .select()
+    .eq('driverRef', req.params.ref);
+    
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `Driver '${req.params.ref}' not found`});
+    }
+})
+
+// Return driver whose surnmane begins with provided substring
+app.get('/api/drivers/search/:substring', async (req, res) => {
+    const { data, error } = await supabase
+    .from('drivers')
+    .select()
+    .ilike('surname', `${req.params.substring}%`);
+    
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `Driver starting with surname '${req.params.substring}' not found`});
+    }
+})
+
+// Return drivers within a given raceId
+app.get('/api/drivers/race/:raceId', async (req, res) => {
+    const { data, error } = await supabase
+    .from('results')
+    .select(`drivers(forename, surname, dob)`)
+    .eq('raceId', req.params.raceId);
+    
+    
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `Race ID:'${req.params.raceId}' not found`});
+    }
+})
 
 
 
