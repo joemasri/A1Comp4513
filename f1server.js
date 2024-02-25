@@ -307,9 +307,32 @@ app.get('/api/results/driver/:ref', async (req, res) => {
 
 // Return all results for a given driver between two years
 app.get('/api/results/drivers/:ref/seasons/:start/:end', async (req, res) => {
-
+    const startYear = req.params.start;
+    const endYear = req.params.end;
     
-})
+    try {
+        const { data, error } = await supabase
+            .from('results')
+            .select(`*, drivers!inner(driverRef), races!inner(year)`)            
+            .eq('drivers.driverRef', req.params.ref)
+            .lte('races.year', endYear)
+            .gte('races.year', startYear);
+
+        // Check for errors
+        if (error) {
+            throw error;
+        }
+
+        if (data && data.length > 0) {
+            res.send(data);
+        } else {
+            res.json({ error: `No results found for driver '${req.params.ref}' between years ${startYear} and ${endYear}` });
+        }
+    } catch (err) {
+        console.error('Error:', err.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 
