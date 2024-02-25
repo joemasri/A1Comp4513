@@ -117,6 +117,19 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
     .select(`drivers(forename, surname, dob)`)
     .eq('raceId', req.params.raceId);
     
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `Race ID:'${req.params.raceId}' not found`});
+    }
+})
+
+// Return just specified race
+app.get('/api/races/:raceId', async (req, res) => {
+    const { data, error } = await supabase
+    .from('races')
+    .select(`circuits(name, location, country)`)
+    .eq('raceId', req.params.raceId);
     
     if (data && data.length > 0) {
         res.send(data);
@@ -125,6 +138,36 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
     }
 })
 
+// Return specified driverRef field
+app.get('/api/races/season/:year', async (req, res) => {
+    const { data, error } = await supabase
+    .from('races')
+    .select()
+    .eq('year', req.params.year)
+    .order('round', { ascending: true })
+    
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `Races for season '${req.params.year}' not found`});
+    }
+})
+
+// Return specific race within a given season, specified by round number
+app.get('/api/races/season/:year/:round', async (req, res) => {
+    const { data, error } = await supabase
+    .from('races')
+    .select()
+    .eq('year', req.params.year)
+    .eq('round', req.params.round);
+
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.json({error: `No race found for year '${req.params.year}' and round '${req.params.round}'`});
+    }
+
+})
 
 
 
