@@ -31,15 +31,7 @@ app.get('/api/circuits/:ref', async (req, res) => {
     .eq('circuitRef', req.params.ref);
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Circuit '${req.params.ref}' not found`});
-    }
+    handleError(error, data, res, `Circuit '${req.params.ref}' not found`);
 })
 
 // Return circuits used in a given season (ascending order)
@@ -51,15 +43,7 @@ app.get('/api/circuits/season/:year', async (req, res) => {
     .order('round', { ascending: true });
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Year '${req.params.year}' not found`});
-    }
+    handleError(error, data, res, `Year '${req.params.year}' not found`);
 })
 
 // Returns all constructors
@@ -78,15 +62,7 @@ app.get('/api/constructors/:ref', async (req, res) => {
     .eq('constructorRef', req.params.ref);
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Constructor ref '${req.params.ref}' not found`});
-    }
+    handleError(error, data, res, `Constructor ref '${req.params.ref}' not found`);
 })
 
 // Returns all drivers
@@ -105,15 +81,7 @@ app.get('/api/drivers/:ref', async (req, res) => {
     .eq('driverRef', req.params.ref);
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-    
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Driver '${req.params.ref}' not found`});
-    }
+    handleError(error, data, res, `Driver '${req.params.ref}' not found`);
 })
 
 // Return driver whose surnmane begins with provided substring
@@ -124,15 +92,7 @@ app.get('/api/drivers/search/:substring', async (req, res) => {
     .ilike('surname', `${req.params.substring}%`);
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Driver starting with surname '${req.params.substring}' not found`});
-    }
+    handleError(error, data, res, `Driver starting with surname '${req.params.substring}' not found`);
 })
 
 // Return drivers within a given raceId
@@ -143,15 +103,7 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
     .eq('raceId', req.params.raceId);
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Race ID:'${req.params.raceId}' not found`});
-    }
+    handleError(error, data, res, `Race ID:'${req.params.raceId}' not found`);
 })
 
 // Return just specified race
@@ -162,15 +114,7 @@ app.get('/api/races/:raceId', async (req, res) => {
     .eq('raceId', req.params.raceId);
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Race ID:'${req.params.raceId}' not found`});
-    }
+    handleError(error, data, res, `Race ID:'${req.params.raceId}' not found`);
 })
 
 // Return specified driverRef field
@@ -182,15 +126,7 @@ app.get('/api/races/season/:year', async (req, res) => {
     .order('round', { ascending: true })
     
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `Races for season '${req.params.year}' not found`});
-    }
+    handleError(error, data, res, `Races for season '${req.params.year}' not found`);
 })
 
 // Return specific race within a given season, specified by round number
@@ -202,15 +138,7 @@ app.get('/api/races/season/:year/:round', async (req, res) => {
     .eq('round', req.params.round);
 
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({error: `No race found for year '${req.params.year}' and round '${req.params.round}'`});
-    }
+    handleError(error, data, res, `No race found for year '${req.params.year}' and round '${req.params.round}'`);
 })
 
 // Return all races for a given circuit
@@ -224,41 +152,29 @@ app.get('/api/races/circuits/:ref', async (req, res) => {
             ascending: true});
 
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({ error: `No races found for circuit '${req.params.ref}'` });
-    }
+    handleError(error, data, res, `No races found for circuit '${req.params.ref}'`);
 });
 
 
 // Return all races for given circuit between two years
-// app.get('/api/races/circuits/:ref/season/:start/:end', async (req, res) => {
+app.get('/api/races/circuits/:ref/season/:start/:end', async (req, res) => {
 
-// const startYear = req.params.start;
-// const endYear = req.params.end;
+const startYear = req.params.start;
+const endYear = req.params.end;
 
-// const { data, error } = await supabase
-//     .from('circuits')
-//     .select(`races(year, round, name, date, time, url), name, location, country`)
-//     .gte('races.year', startYear)
-//     .lte('races.year', endYear)
+const { data, error } = await supabase
+    .from('circuits')
+    .select(`races(year, round, name, date, time, url), name, location, country`)
+    .gte('races.year', startYear)
+    .lte('races.year', endYear)
 
-//     if(startYear > endYear) {
-//         res.json({error: "Start year cannot be greater than end year"})
-//     }
+    if(startYear > endYear) {
+        res.json({error: "Start year cannot be greater than end year"})
+    }
 
-//     if (data && data.length > 0) {
-//         res.send(data);
-//     } else {
-//         res.json({error: `No races found for circuit '${req.params.ref}' between years ${req.params.start} and ${req.params.end}`});
-// }
-
-// })
+    // Check for errors
+    handleError(error, data, res, `No races found for circuit '${req.params.ref}' between years ${req.params.start} and ${req.params.end}`);
+})
 
 // Return results for specified race
 app.get('/api/results/:raceId', async (req, res) => {
@@ -273,15 +189,7 @@ app.get('/api/results/:raceId', async (req, res) => {
             .order('grid', { ascending: true });
 
         // Check for errors
-        if (error) {
-            throw error;
-        }
-
-        if (data && data.length > 0) {
-            res.send(data);
-        } else {
-            res.json({ error: `No results found for race ID '${req.params.raceId}'` });
-        }
+        handleError(error, data, res, `No results found for race ID '${req.params.raceId}'`);
 });
 
 
@@ -293,24 +201,16 @@ app.get('/api/results/driver/:ref', async (req, res) => {
     .eq('drivers.driverRef', req.params.ref);
 
     // Check for errors
-    if (error) {
-        throw error;
-    }
-
-    if (data && data.length > 0) {
-        res.send(data);
-    } else {
-        res.json({ error: `No results found for driver '${req.params.ref}'`});
-    }
+    handleError(error, data, res, `No results found for driver '${req.params.ref}'`);
 })
 
 
 // Return all results for a given driver between two years
 app.get('/api/results/drivers/:ref/seasons/:start/:end', async (req, res) => {
-    const startYear = req.params.start;
-    const endYear = req.params.end;
     
-    try {
+        const startYear = req.params.start;
+        const endYear = req.params.end;
+
         const { data, error } = await supabase
             .from('results')
             .select(`*, drivers!inner(driverRef), races!inner(year)`)            
@@ -319,22 +219,66 @@ app.get('/api/results/drivers/:ref/seasons/:start/:end', async (req, res) => {
             .gte('races.year', startYear);
 
         // Check for errors
-        if (error) {
-            throw error;
-        }
-
-        if (data && data.length > 0) {
-            res.send(data);
-        } else {
-            res.json({ error: `No results found for driver '${req.params.ref}' between years ${startYear} and ${endYear}` });
-        }
-    } catch (err) {
-        console.error('Error:', err.message);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+        handleError(error, data, res, `No results found for driver '${req.params.ref}' between years ${startYear} and ${endYear}`);
 });
 
+// Returns qualifying results for specified race
+app.get('/api/qualifying/:raceId', async (req, res) => {
+    
+        const raceId = req.params.raceId;
+        const { data, error } = await supabase
+            .from('qualifying')
+            .select(`raceId, driverId, constructorId, 
+            drivers(driverRef, code, forename, surname),
+            races(name, round, year, date),
+            constructors(name, constructorRef, nationality)
+            `)
+            .eq('raceId', raceId)
+            .order('position', { ascending: true }); 
 
+        handleError(error, data, res, `Qualifying results with raceId: '${raceId}' not found`);
+});
+
+// Returns current season driver standings table for specified race
+app.get('/api/standings/:raceId/drivers', async (req, res) => {
+    
+        const raceId = req.params.raceId;
+        const { data, error } = await supabase
+            .from('driverStandings')
+            .select('*, drivers!inner(driverRef)')
+            .eq('raceId', raceId)
+            .order('position', { ascending: true });
+
+        // Check for errors
+        handleError(error, data, res, `Standings with raceId: '${raceId}' not found`);
+});
+
+// Returnss current season constructors standings table for specified race
+app.get('/api/standings/:raceId/constructors', async (req, res) => {
+    
+        const raceId = req.params.raceId;
+        const { data, error } = await supabase
+            .from('constructorStandings')
+            .select(`raceId, constructorId, position, wins, 
+                    constructors(name, constructorRef, nationality)`)
+            .eq('raceId', raceId)
+            .order('position', { ascending: true }); 
+
+        // Check for errors
+        handleError(error, data, res, `No standings found for race with id '${raceId}'`);
+});
+
+// Handles error
+const handleError = (error, data, res, errMessage = null) => {
+    if (error) {
+        throw error;
+    } else if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        const errorMessage = errMessage || 'No data found';
+        res.status(404).json({ error: errorMessage });
+    }
+}
 
 // Server Listening   
 app.listen(8080, () => { 
