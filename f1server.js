@@ -79,7 +79,7 @@ app.get('/api/drivers/:ref', async (req, res) => {
     const { data, error } = await supabase
     .from('drivers')
     .select()
-    .eq('driverRef', req.params.ref);
+    .ilike('driverRef', req.params.ref);
     
     // Check for errors
     handleError(error, data, res, `Driver '${req.params.ref}' not found`);
