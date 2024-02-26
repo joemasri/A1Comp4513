@@ -165,7 +165,7 @@ const endYear = req.params.end;
 
 const { data, error } = await supabase
     .from('circuits')
-    .select(`races(year, round, name, date, time, url), name, location, country`)
+    .select(`races(year, round, name, date, time), name,country`)
     .gte('races.year', startYear)
     .lte('races.year', endYear)
 
