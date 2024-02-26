@@ -258,6 +258,8 @@ app.get('/api/standings/:raceId/drivers', async (req, res) => {
 app.get('/api/standings/:raceId/constructors', async (req, res) => {
     
         const raceId = req.params.raceId;
+
+    try {
         const { data, error } = await supabase
             .from('constructorStandings')
             .select(`raceId, constructorId, position, wins, 
@@ -267,6 +269,11 @@ app.get('/api/standings/:raceId/constructors', async (req, res) => {
 
         // Check for errors
         handleError(error, data, res, `No standings found for race with id '${raceId}'`);
+    
+    } catch (err) {
+        console.error('Error:', err.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 // Handles error
