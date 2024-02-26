@@ -271,8 +271,7 @@ app.get('/api/standings/:raceId/constructors', async (req, res) => {
         handleError(error, data, res, `No standings found for race with id '${raceId}'`);
     
     } catch (err) {
-        console.error('Error:', err.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.send({ error: 'Internal Server Error' });
     }
 });
 
