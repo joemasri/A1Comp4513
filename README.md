@@ -23,7 +23,7 @@ https://zeea1.onrender.com/api/races/circuits/monza/season/2015/2022
 https://zeea1.onrender.com/api/results/1106  
 https://zeea1.onrender.com/api/results/driver/max_verstappen  
 https://zeea1.onrender.com/api/results/driver/connolly  
-https://zeea1.onrender.com/api/results/driver/sainz/seasons/2021/2022  
+https://zeea1.onrender.com/api/results/drivers/sainz/seasons/2021/2022  
 https://zeea1.onrender.com/api/qualifying/1106  
 https://zeea1.onrender.com/api/standings/1120/drivers  
 https://zeea1.onrender.com/api/standings/1120/constructors  
